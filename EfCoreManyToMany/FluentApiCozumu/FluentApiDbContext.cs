@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EfCoreManyToMany.GenericRepository.EntityConfig;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,8 @@ namespace EfCoreManyToMany.FluentApiCozumu
 
     public class FluentApiDbContext:DbContext
     {
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         public DbSet<Kitap> Kitaplar { get; set; }
         public DbSet<Yazar> Yazarlar { get; set; }
@@ -61,6 +64,13 @@ namespace EfCoreManyToMany.FluentApiCozumu
                 .HasOne(ky => ky.Yazar)
                 .WithMany(y => y.Kitaplar)
                 .HasForeignKey(ky => ky.YazarId);
+
+            modelBuilder.ApplyConfiguration(new CategoryConfig());
+            modelBuilder.ApplyConfiguration(new ProductConfig());
+            modelBuilder.ApplyConfiguration(new CategoryProductConfig());
+
+           
+
         }
     }
 }

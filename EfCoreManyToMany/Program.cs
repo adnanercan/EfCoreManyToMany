@@ -1,4 +1,6 @@
 ﻿using EfCoreManyToMany.FluentApiCozumu;
+using EfCoreManyToMany.GenericRepository.Abstract;
+using EfCoreManyToMany.GenericRepository.Concreate;
 using Microsoft.EntityFrameworkCore;
 
 namespace EfCoreManyToMany
@@ -28,9 +30,10 @@ namespace EfCoreManyToMany
             //context.SaveChanges();
             //#endregion 
             #endregion
+    
             #region Fluent Api ile 
-
             FluentApiDbContext context = new FluentApiDbContext();
+
             #region Yeni Kayit olusturma
             //var yazar = new Yazar { YazarAdi = "Yasar  Kemal" };
             //var kitap = new Kitap { KitapAdi = "Ince Memed" };
@@ -61,16 +64,64 @@ namespace EfCoreManyToMany
 
 
             #region Yazardan kaydin 3 numarali  kitabinin silinmesi
-            var yazar = context.Yazarlar.Include(p => p.Kitaplar).FirstOrDefault(p => p.Id == 2);
-            var kitap = context.Kitaplar.FirstOrDefault(p => p.Id == 3);
+            //var yazar = context.Yazarlar.Include(p => p.Kitaplar).FirstOrDefault(p => p.Id == 2);
+            //var kitap = context.Kitaplar.FirstOrDefault(p => p.Id == 3);
 
-            //var kitapYazar = new KitapYazar { Kitap = kitap };
-            var silinecekYazar = yazar.Kitaplar.FirstOrDefault(p => p.KitapId == kitap.Id);
-            yazar.Kitaplar.Remove(silinecekYazar);
-            context.SaveChanges();
+            ////var kitapYazar = new KitapYazar { Kitap = kitap };
+            //var silinecekYazar = yazar.Kitaplar.FirstOrDefault(p => p.KitapId == kitap.Id);
+            //yazar.Kitaplar.Remove(silinecekYazar);
+            //context.SaveChanges();
             #endregion
             #endregion
 
+
+
+            #region Generic Repository ile Many To Many
+
+            IRepository<Category> categoryRepo = new Repository<Category>();
+            IRepository<Product> productRepo = new Repository<Product>();
+
+
+
+
+
+
+
+            #region Kayit Ekleme
+            //categoryRepo.Insert(new Category { CategoryName = "Elektronik", Description = "Elektronik" });
+            //categoryRepo.Insert(new Category { CategoryName = "Bilgisayar", Description = "Bilgisayar" });
+            //categoryRepo.Insert(new Category { CategoryName = "Cep Telefonu", Description = "Cep Telefonu" });
+
+            //categoryRepo.Insert(new Category { CategoryName = "Gida", Description = "Gida" });
+            //categoryRepo.Insert(new Category { CategoryName = "Tekstil", Description = "Tekstil" });
+
+            //productRepo.Insert(new Product { ProductName = "Asus Notebook", Price = 1000, Quantity = 10});
+            //productRepo.Insert(new Product { ProductName = "Iphone 50", Price = 1500, Quantity = 20 });
+            #endregion
+
+            #region Var olan urune var olan bir kategori ekleme
+
+            //var elektronik = categoryRepo.GetById(1);
+            //var cepTelefonu = categoryRepo.GetById(3);
+
+
+            //var iphone = productRepo.GetAllInclude(x=>x.Id==2, p => p.Categories).FirstOrDefault();
+
+            //iphone.Categories.Add(new CategoryProduct { Category = elektronik });
+            //iphone.Categories.Add(new CategoryProduct { Category = cepTelefonu });
+
+            //productRepo.Update(iphone);
+            #endregion
+
+            #region Var olan kayidi çekme
+            var iphone = productRepo.GetAllInclude(x => x.Id == 2, p => p.Categories).FirstOrDefault();
+            Console.WriteLine($"Çekilen Urun {iphone.ProductName} Kategori Sayisi :{iphone.Categories.Count}");
+            foreach (var item in iphone.Categories)
+            {
+                Console.WriteLine(item.Category.CategoryName);
+            }
+            #endregion
+            #endregion
             Console.WriteLine("Hello, World!");
         }
     }
